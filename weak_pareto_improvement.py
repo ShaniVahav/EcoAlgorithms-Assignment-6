@@ -23,7 +23,12 @@ def find_weak_pareto_improvement(valuations: list[list[float]], allocation: list
     min_ratio = []
     min_loss = 100
     index = 0
-    # find the ratio for each directed edge
+
+    """""
+    The function looks for the player (x) whose ratio =< 1 because if the ratio > 1 then
+    the transfer will not benefit.
+    In addition, the function is looking for the player whose maximum he can transfer is the least (call the item 'y')
+    """
     for p in range(len(player)):
         min_ratio.append(1000)
         for item in range(len(valuations[0])):
@@ -36,7 +41,7 @@ def find_weak_pareto_improvement(valuations: list[list[float]], allocation: list
                     ratio = valueOf_item / valuations[player[0]][item]
                 if ratio < min_ratio[p]:
                     min_ratio[p] = ratio
-                    if min_ratio[p] < 1 and valueOf_item * alloc_item < min_loss:
+                    if min_ratio[p] <= 1 and valueOf_item * alloc_item < min_loss:
                         min_loss = valueOf_item * alloc_item  # the minimum that player can loss
                         index = p
 
@@ -45,6 +50,12 @@ def find_weak_pareto_improvement(valuations: list[list[float]], allocation: list
 
     print(f"min loss of the cycle is: {min_loss}\n")
 
+    """"
+    After we have found player x, he will transfer all the contents y first,
+    and thanks to this we will get rid of the edge - then every player
+    after him transfers exactly the amount he earned,
+    as a result no player loses, and player x can also profit.
+    """
     profit = min_loss
     for i in range(index*2, 0, -2):
         alloc_toPass = profit / valuations[cycle[i]][cycle[i - 1]]
